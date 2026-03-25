@@ -1,4 +1,4 @@
-name: CI-CD Pipeline
+name: CI-CD Pipeline with SonarQube + ZAP + AWS EB
 
 on:
   push:
@@ -35,33 +35,30 @@ jobs:
           pip install -r requirements.txt
           pip install flake8 coverage
 
-      - name: Lint
+      - name: Run lint checks
         run: flake8 .
 
-      - name: Django checks
+      - name: Run Django checks
         run: python manage.py check
 
       - name: Run migrations
         run: python manage.py migrate --noinput
-
-      - name: Run tests
-        run: python manage.py test
 
       - name: Run tests with coverage
         run: |
           coverage run manage.py test
           coverage xml
 
-      - name: SonarCloud scan
+      - name: SonarQube scan
         uses: SonarSource/sonarcloud-github-action@v2.3.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
           args: >
-            -Dsonar.organization=${{ secrets.SONAR_ORG_KEY }}
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=${{ secrets.SONAR_ORG_KEY }}
             -Dsonar.sources=.
+            -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.python.coverage.reportPaths=coverage.xml
 
   deploy:
