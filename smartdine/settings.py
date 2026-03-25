@@ -49,10 +49,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "smartdine.wsgi.application"
 
+if os.path.exists("/var/app/data"):
+    db_path = "/var/app/data/db.sqlite3"
+else:
+    db_path = BASE_DIR / "db.sqlite3"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": db_path,
     }
 }
 
